@@ -1,0 +1,327 @@
+#set($layout = "/layout/default.vm") ##选择布局页面
+#set($page_title ="solrExample")
+#set($name = "solrExample")
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="utf-8">
+    <title>坐标查询</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+    </style>
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
+</head>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid" id="swap">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span>
+                <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+            <a class="brand" href="#">UC-SOLR</a>
+
+            <div class="btn-group pull-right">
+                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"> <i class="icon-user"></i> 张坦 <span
+                        class="caret"></span> </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#">个人管理</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#">退出</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li class="active">
+                        <a href="#" id="indexA">首页</a>
+                    </li>
+                    <li>
+                        <a href="#contact" id="solrA">地图演示</a>
+                    </li>
+                    <li>
+                        <a href="#contact">设置</a>
+                    </li>
+                    <li>
+                        <a href="#about" id="aboutUsA">关于我们</a>
+                    </li>
+
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row-fluid" id="solrContent">
+        <div class="span3">
+            <div class="well sidebar-nav">
+                <ul class="nav nav-list">
+                    <li class="nav-header">
+                        solr相关功能
+                    </li>
+                    <li class="active" id="getAddressNav">
+                        <a href="#">搜索地址坐标</a>
+                    </li>
+                    <li id="getCoordinateNav">
+                        <a href="#">空间搜索</a>
+                    </li>
+                </ul>
+            </div>
+            <!--/.well -->
+        </div>
+        <!--/span-->
+
+        <div class="span4" id="content" style="overflow: hidden; position: relative;height: 330px">
+            <div class="hero-unit" id="getAddress">
+                <ul class="nav nav-tabs nav-stacked">
+                    <li>
+                        <label>地址</label><input type="text" id="address">
+                    </li>
+                    <button type="button" id="getGeoByAdressBtn" class="btn btn-primary" data-loading-text="搜索中">搜索
+                    </button>
+                    <li>
+                        <label>目标纬度</label><input type="text" id="rsAdLatitude">
+                        <label>半径范围</label><input type="text" id="rsAdRange">
+                    </li>
+                    <button type="button" id="getMapByGeoBtn" class="btn btn-primary" data-loading-text="定位中">定位
+                    </button>
+                </ul>
+            </div>
+
+            <div class="hero-unit" id="getCoordinate">
+                <ul class="nav nav-tabs nav-stacked">
+                    <li>
+                        <label>目标经度</label><input type="text" id="lng">
+                        <label>目标纬度</label><input type="text" id="lat">
+                        <label>半径范围</label><input type="text" id="distance">
+                    </li>
+                    <button type="button" id="getByCoordinateBtn" class="btn btn-primary" data-loading-text="搜索中">搜索
+                    </button>
+                    <button type="button" id="getMapAllByGeo" class="btn btn-primary" data-loading-text="定位中">定位所有
+                    </button>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="span4" id="mapContent" style="overflow: hidden; position: relative;height: 330px">
+
+        </div>
+        <div class="span6" id="rsContent" style="display: none;margin-left: 300px">
+            <table class="table table-hover">
+                <caption><h3>查询结果</h3></caption>
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>经度</th>
+                    <th>维度</th>
+                </tr>
+                </thead>
+                <tbody id="rs">
+
+                </tbody>
+            </table>
+        </div>
+        <!--/row-->
+    </div>
+
+
+    <footer>
+        <p>
+            &copy; zt集团 2013
+        </p>
+    </footer>
+
+</div>
+<!--/.fluid-container-->
+
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap-transition.js"></script>
+<script src="js/bootstrap-alert.js"></script>
+<script src="js/bootstrap-modal.js"></script>
+<script src="js/bootstrap-dropdown.js"></script>
+<script src="js/bootstrap-scrollspy.js"></script>
+<script src="js/bootstrap-tab.js"></script>
+<script src="js/bootstrap-tooltip.js"></script>
+<script src="js/bootstrap-popover.js"></script>
+<script src="js/bootstrap-button.js"></script>
+<script src="js/bootstrap-collapse.js"></script>
+<script src="js/bootstrap-carousel.js"></script>
+<script src="js/bootstrap-typeahead.js"></script>
+<script src="js/jquery.scrollTo.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=78ff589600ab028715dad8a2ee4ce618"></script>
+<script>
+
+    jQuery(function ($) {
+
+                var map = new BMap.Map("mapContent");
+
+                $("#getAddressNav").click(function () {
+                    jQuery("#rsContent").css("display", "none");
+                    $("#content").scrollTo('#getAddress', 500);
+                    $("#getCoordinateNav").removeClass("active");
+                    $("#getAddressNav").addClass("active");
+
+                });
+                $("#getCoordinateNav").click(function () {
+                    jQuery("#rsContent").css("display", "none");
+                    $("#content").scrollTo('#getCoordinate', 500);
+                    $("#getAddressNav").removeClass("active");
+                    $("#getCoordinateNav").addClass("active");
+
+                });
+
+
+                $("#indexA").click(function () {
+                    $("#swap").scrollTo('#solrContent', 500);
+                });
+                $("#solrA").click(function () {
+                    $("#swap").scrollTo('#solrContent', 500);
+                });
+                $("#aboutUsA").click(function () {
+                    $("#swap").scrollTo('#aboutUsContent', 500);
+                });
+
+
+                $("#getGeoByAdressBtn").click(function () {
+                    var address = $("#address").val();
+                    var btn = $("#getGeoByAdressBtn");
+                    btn.button('loading');
+                    $.ajax({
+                        async: false,
+                        cache: false,
+                        url: "getGeo?address=" + address,
+                        type: 'get',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.result.location != null) {
+                                $("#rsAdLatitude").val(data.result.location.lng);
+                                $("#rsAdRange").val(data.result.location.lat);
+                            } else {
+                                $("#rsAdLatitude").val("没找到坐标哦");
+                                $("#rsAdRange").val("没找到坐标哦");
+                            }
+
+                        },
+                        error: function () {
+                            $("#rsAdLatitude").val("百度地图调用异常了哦");
+                            $("#rsAdRange").val("百度地图调用异常了哦");
+                        }
+                    });
+                    btn.button('reset');//将按钮状态初始化到最初
+                });
+            ##查询结果json转换成html
+                var creatRsList = function (rs) {
+                    jQuery("#rs").empty();
+                    jQuery.each(rs, function (i) {
+                        jQuery("#rs").append("\<tr><td>" + rs[i].userId + "\</td><td>" + rs[i].lng + "\</td><td>" + rs[i].lat + "\</td></tr>");
+//                        jQuery("#rs").append("\"<option   value=\'" + qufu[i].zonevalue + "\'>" + qufu[i].zonename + "</option>\"");
+                    });
+                };
+
+                //http://localhost:8080/serachByGeo?lng=35.0752&lat=-97.032&distance=5000
+                $("#getByCoordinateBtn").click(function () {
+                    var btn = $("#getByCoordinateBtn");
+                    btn.button('loading');
+                    var address = $("#rsContent").fadeIn();
+                    var distance = $("#distance").val();
+                    var lng = $("#lng").val();
+                    var lat = $("#lat").val();
+                    $.ajax({
+                        async: false,
+                        cache: false,
+                        url: "serachByGeo?lng=" + lng + "&lat=" + lat + "&distance=" + distance,
+                        type: 'get',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data != null && data.userList != null) {
+                                creatRsList(data.userList);
+                            } else {
+//                                $("#rsAdLatitude").val("没找到坐标哦");
+//                                $("#rsAdRange").val("没找到坐标哦");
+                            }
+
+                        },
+                        error: function () {
+//                            $("#rsAdLatitude").val("solr服务器调用异常了哦");
+//                            $("#rs").append("<tr><p class="text-error">Donec ullamcorper nulla non metus auctor fringilla.</p></tr>")
+                        }
+                    });
+                    btn.button('reset');//将按钮状态初始化到最初
+                });
+
+                $("#getMapByGeoBtn").click(function () {
+                    var rsAdLatitude = $("#rsAdLatitude").val();
+                    var rsAdRange = $("#rsAdRange").val();
+                    var sContent =
+                            "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>张坦的家</h4>" +
+                                    "<img style='float:right;margin:4px' id='imgDemo' src='http://app.baidu.com/map/images/tiananmen.jpg' width='139' height='104' title='zt家'/>" +
+                                    "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>张坦家坐落在中国北京市中心,故宫的南侧,与天安门广场隔长安街相望,是清朝皇城的大门...</p>" +
+                                    "</div>";
+                    var point = new BMap.Point(rsAdLatitude, rsAdRange);
+                    var marker = new BMap.Marker(point);
+                    var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+                    map.centerAndZoom(point, 15);
+                    map.addOverlay(marker);
+                    marker.addEventListener("click", function () {
+                        this.openInfoWindow(infoWindow);
+                        //图片加载完毕重绘infowindow
+                        document.getElementById('imgDemo').onload = function () {
+                            infoWindow.redraw();
+                        }
+                    });
+                });
+
+
+                // 编写自定义函数,创建标注
+                function addMarker(point) {
+                    var marker = new BMap.Marker(point);
+                    map.addOverlay(marker);
+                }
+
+                // 标注多个点
+                $("#getMapAllByGeo").click(function () {
+                    for (var i = 0; i <= $("#rs").children("tr").length; i++) {
+                        var lng = $("#rs").children("tr").eq(i).find("td").eq(1).html();
+                        var lat = $("#rs").children("tr").eq(i).find("td").eq(2).html();
+                        var point = new BMap.Point(lng,lat);
+                        addMarker(point);
+                    }
+                });
+
+            }
+    )
+</script>
+</body>
+</html>
